@@ -3,6 +3,8 @@ package DAO;
 import Model.Account;
 import Util.ConnectionUtil;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountDAO implements AccountDAOInterface{
 
@@ -44,5 +46,27 @@ public class AccountDAO implements AccountDAOInterface{
                 e.printStackTrace();
             }
             return null;
+            }
+            @Override
+            public List<Account> getAllAccounts() {
+            Connection connection = ConnectionUtil.getConnection();
+            List<Account> accounts = new ArrayList<>();
+
+            try {
+                String sqlQuery = "SELECT * FROM account";
+                PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+                ResultSet resultSet =  preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    Account account = new Account();
+                    account.setAccount_id(resultSet.getInt(1));
+                    account.setUsername(resultSet.getString(2));
+                    account.setPassword(resultSet.getString(3));
+                    accounts.add(account);
+                }
+                
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return accounts;
             }
 }
