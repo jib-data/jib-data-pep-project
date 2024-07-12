@@ -8,11 +8,11 @@ import java.util.List;
 public class AccountService implements AccountServiceInterface {
     AccountDAO accountDAO;
 
-    AccountService(){
+    public AccountService(){
         this.accountDAO = new AccountDAO();
     }
 
-    AccountService(AccountDAO accountDAO){
+    public AccountService(AccountDAO accountDAO){
         this.accountDAO = accountDAO;
     }
 

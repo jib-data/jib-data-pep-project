@@ -12,21 +12,21 @@ public class MessageService implements MessageServiceInterface {
     AccountDAO accountDAO;
     MessageDAO messageDAO;
 
-    MessageService(){
+    public MessageService(){
         this.accountDAO = new AccountDAO();
         this.messageDAO = new MessageDAO();
     }
     
-    MessageService (AccountDAO accountDAO){
+    public MessageService (AccountDAO accountDAO){
         this.accountDAO = accountDAO;
         this.messageDAO = new MessageDAO();
     }
-    MessageService (MessageDAO messageDAO){
+    public MessageService (MessageDAO messageDAO){
         this.accountDAO = new AccountDAO();
         this.messageDAO = messageDAO;
     }
 
-    MessageService (AccountDAO accountDAO, MessageDAO messageDAO){
+    public MessageService (AccountDAO accountDAO, MessageDAO messageDAO){
         this.accountDAO = accountDAO;
         this.messageDAO = messageDAO;
     }
