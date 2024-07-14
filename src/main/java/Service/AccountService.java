@@ -21,6 +21,7 @@ public class AccountService implements AccountServiceInterface {
         List<Account> accounts = accountDAO.getAllAccounts();
         for (Account account: accounts){
             if (account.getUsername() == userAccount.getUsername()){
+                System.out.println("Username already exists");
                 return null;
             }
         }
@@ -28,6 +29,7 @@ public class AccountService implements AccountServiceInterface {
         if (userAccount.getUsername().length() > 0 && userAccount.getPassword().length() >= 4){            
                 Account newAccount;
                 newAccount = accountDAO.insertAccount(userAccount);
+                System.out.println("Account was added");
                 return newAccount;
             } 
         return null;

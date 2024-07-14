@@ -18,8 +18,14 @@ public class AccountDAO implements AccountDAOInterface{
                     PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
                     preparedStatement.setString(1, userAccount.getUsername());
                     preparedStatement.setString(2, userAccount.getPassword());
-                    preparedStatement.executeUpdate();
+                    int updateSuccess = preparedStatement.executeUpdate();
+                    if (updateSuccess > 0){
+                        System.out.println("Update was succesfull");
+                    } else {
+                        System.out.println("insert was not successful");
+                    }
                     ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                    
 
                     while (generatedKeys.next()) {                        
                         int generatedKey = (int) generatedKeys.getLong(1);
@@ -40,6 +46,7 @@ public class AccountDAO implements AccountDAOInterface{
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 while (resultSet.next()) {
+                    System.out.println("Result contains values");
                     return new Account(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3));
                 }
             } catch (SQLException e) {
@@ -62,6 +69,7 @@ public class AccountDAO implements AccountDAOInterface{
                     account.setUsername(resultSet.getString(2));
                     account.setPassword(resultSet.getString(3));
                     accounts.add(account);
+                    System.out.println("Account was added");
                 }
                 
             } catch (SQLException e) {

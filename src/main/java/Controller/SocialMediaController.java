@@ -42,7 +42,7 @@ public class SocialMediaController {
         app.get("localhost:8080/messages/{message_id}", this::getMessageByMessageID);
         app.delete("localhost:8080/messages/{message_id}", this::deleteMessageByMessageID);
         app.patch("localhost:8080/messages/{message_id}", this::updateMEssageByMessageID);
-        app.get("localhost:8080/accounts/{account_id}/messages", this::getMessageByMessageID);
+        app.get("localhost:8080/accounts/{account_id}/messages", this::getMessageByAccountID);
 
         return app;
     }
