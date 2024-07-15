@@ -28,8 +28,9 @@ public class AccountService implements AccountServiceInterface {
 
         if (userAccount.getUsername().length() > 0 && userAccount.getPassword().length() >= 4){            
                 Account newAccount;
+                System.out.println("registerAccount method was called inside service");
                 newAccount = accountDAO.insertAccount(userAccount);
-                System.out.println("Account was added");
+                
                 return newAccount;
             } 
         return null;
@@ -37,12 +38,18 @@ public class AccountService implements AccountServiceInterface {
 
     @Override
     public Account loginAccount(Account userAccount) {
+        System.out.println("userAccount: " + userAccount.getUsername() + " " + userAccount.getPassword());
         List<Account> accounts = accountDAO.getAllAccounts();
         for (Account account: accounts){
-            if (account.getPassword() == userAccount.getPassword() && account.getPassword() == userAccount.getPassword()){
+            System.out.println(account.getUsername() + " " + account.getPassword());
+            
+            if (account.getPassword().equals(userAccount.getPassword())  && account.getPassword().equals(userAccount.getPassword())){
                 Account user;
                 user = accountDAO.getAccount(userAccount);
+                System.out.println("User found");
                 return user;
+            } else {
+                System.out.println("User doesn't exist");
             }
         }
         return null;
