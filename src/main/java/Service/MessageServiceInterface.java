@@ -9,6 +9,6 @@ public interface MessageServiceInterface {
     List<Message> getAllMessages();
     Message getMessageByMessageID(int message_id);
     Message deleteMessageByID(int message_id);
-    Message updateMessage(Message message);
+    Message updateMessage(String message_text, int message_id);
     List<Message> getAllMessagesWithID(int account_id);
 }

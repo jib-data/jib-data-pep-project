@@ -57,9 +57,15 @@ public class MessageService implements MessageServiceInterface {
     }
     @Override
     public Message getMessageByMessageID(int message_id) {
-        Message message;
-        message = messageDAO.getMessageByMessageID(message_id);        
-        return message;
+        List<Message> allMessages = messageDAO.getAllMessages(); 
+        for (Message existingMessage: allMessages){
+            if (message_id == existingMessage.getMessage_id()){
+                Message  message = messageDAO.getMessageByMessageID(message_id);        
+                return message;
+            }
+        }
+        return null;
+        
     }
 
     @Override
@@ -76,17 +82,16 @@ public class MessageService implements MessageServiceInterface {
     }
 
     @Override
-    public Message updateMessage(Message message) {
-        List<Message> allMessages;
-        allMessages = messageDAO.getAllMessages();
+    public Message updateMessage(String message_text, int message_id) {
+        List<Message> allMessages = messageDAO.getAllMessages();
         for (Message currentMessage: allMessages){
-            if(currentMessage.getMessage_id() == message.getMessage_id()&&
-                message.getMessage_text().length() > 0 &&
-                message.getMessage_text().length() <= 255){
+            if(currentMessage.getMessage_id() == message_id&&
+                message_text.length() > 0 &&
+                message_text.length() <= 255){
                     Message updatedMessage;
-                    updatedMessage = messageDAO.updateMessage(message);
+                    updatedMessage = messageDAO.updateMessage(message_text, message_id);
                     return updatedMessage;
-                }
+                } 
         }
         return null;
     }
@@ -94,6 +99,6 @@ public class MessageService implements MessageServiceInterface {
     public List<Message> getAllMessagesWithID(int account_id) {
         List<Message> returnedMessages;
         returnedMessages = messageDAO.getAllMessagesGivenAccountID(account_id);
-        return returnedMessages;
+        return returnedMessages; 
     }
 }

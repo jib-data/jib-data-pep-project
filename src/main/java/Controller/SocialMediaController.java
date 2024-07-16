@@ -35,14 +35,14 @@ public class SocialMediaController {
 
     public Javalin startAPI() {
         Javalin app = Javalin.create();
-        app.post("localhost:8080/register", this::userRegisterationHandler);
-        app.post("localhost:8080/login", this::userLoginHandler);
-        app.post("localhost:8080/messages", this::createMessageHandler);
-        app.get("localhost:8080/messages", this::getAllMessageHandler);
-        app.get("localhost:8080/messages/{message_id}", this::getMessageByMessageID);
-        app.delete("localhost:8080/messages/{message_id}", this::deleteMessageByMessageID);
-        app.patch("localhost:8080/messages/{message_id}", this::updateMEssageByMessageID);
-        app.get("localhost:8080/accounts/{account_id}/messages", this::getMessageByAccountID);
+        app.post("register", this::userRegisterationHandler);
+        app.post("login", this::userLoginHandler);
+        app.post("messages", this::createMessageHandler);
+        app.get("messages", this::getAllMessageHandler);
+        app.get("messages/{message_id}", this::getMessageByMessageID);
+        app.delete("messages/{message_id}", this::deleteMessageByMessageID);
+        app.patch("messages/{message_id}", this::updateMessageByMessageID);
+        app.get("accounts/{account_id}/messages", this::getMessageByAccountID);
 
         return app;
     }
@@ -62,6 +62,7 @@ public class SocialMediaController {
             Account receivedAccount = mapper.readValue(accountString, Account.class);
             if (receivedAccount.getPassword() == null && receivedAccount.getUsername() == null){
             context.status(400);
+            return;
             }  
                 
             Account createdAccount = accountService.registerAccount(receivedAccount);
@@ -85,7 +86,8 @@ public class SocialMediaController {
             Account receivedAccount = mapper.readValue(accountString, Account.class);
 
             if (receivedAccount.getPassword() == null && receivedAccount.getUsername() == null){
-                context.status(400);
+                context.status(401);
+                return;
             }
 
             Account loggedInAccount = accountService.loginAccount(receivedAccount);
@@ -93,11 +95,11 @@ public class SocialMediaController {
                 context.status(200);
                 context.json(mapper.writeValueAsString(loggedInAccount));
             } else{
-                context.status(400);
+                context.status(401);
             }
 
         } catch (JsonProcessingException e) {
-           context.status(400);
+           context.status(401);
         }
 
 
@@ -109,6 +111,7 @@ public class SocialMediaController {
             Message receivedMessage = mapper.readValue(messageString, Message.class);
             if (receivedMessage.getMessage_text()== null){
                 context.status(400);
+                return;
             } 
             Message createdMessage = messageService.createMessage(receivedMessage);
             if (createdMessage != null){
@@ -132,37 +135,58 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         int message_id = Integer.parseInt(context.pathParam("message_id"));
         Message retrievedMessage = messageService.getMessageByMessageID(message_id);
-        context.status();
-        context.json(mapper.writeValueAsString(retrievedMessage));
+        if (retrievedMessage != null){
+            context.status(200);
+            context.json(mapper.writeValueAsString(retrievedMessage));
+        } else {
+            context.status(200);
+            
+        }
+        
     }
 
     private void deleteMessageByMessageID(Context context) throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         int message_id = Integer.parseInt(context.pathParam("message_id"));
         Message deletedMessage = messageService.deleteMessageByID(message_id);
-        context.status(200);
-        context.json(mapper.writeValueAsString(deletedMessage));
+        if (deletedMessage != null){
+            context.status(200);
+            context.json(mapper.writeValueAsString(deletedMessage));
+        } else {
+            context.status(200);
+        }
+       
     }
 
-    private void updateMEssageByMessageID(Context context) throws JsonProcessingException{
+    private void updateMessageByMessageID(Context context) throws JsonProcessingException {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            String receivedString = context.body();
-            Message receivedMessage = mapper.readValue(receivedString, Message.class);
-            if (receivedMessage.getMessage_text().length() == 0){
-                context.status(400);
-            }
+            // Extracting message_id as String and parsing String version of message_id to int
+            int receivedMessageID = Integer.parseInt(context.pathParam("message_id")); 
 
-            Message updatedMessage = messageService.updateMessage(receivedMessage);
-            if (updatedMessage != null){
+            // Extracting the body of the request in the form of String data type
+            Message receivedMessage = mapper.readValue(context.body(), Message.class) ;
+            String receivedMessageText = receivedMessage.getMessage_text();
+            
+            // Checking if receievedMessageText is not empty
+            if (receivedMessageText.length() == 0){
                 context.status(400);
+                return;
+            } 
+            // Extracting updated Data if received message string is not empty
+            Message updatedMessage = messageService.updateMessage(receivedMessageText, receivedMessageID);
+
+            // If an updatedMessage is successfully returned status 200, send updated message as string, else status 400
+            if (updatedMessage != null){
+                context.status(200);
                 context.json(mapper.writeValueAsString(updatedMessage));
+            } else {
+                context.status(400);
             }
             
         } catch (JsonProcessingException e) {
-            context.status(400);
-        }  
-            
+            context.status(400);            
+        }              
     }
 
     private void getMessageByAccountID(Context context) throws JsonProcessingException{

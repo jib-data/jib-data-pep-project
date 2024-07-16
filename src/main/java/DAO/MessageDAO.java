@@ -108,7 +108,7 @@ public class MessageDAO implements MessageDAOInterface {
 
         try {
            
-           String sqlQuery = "DELETE FROM message WHERE meesage_id = ?";           
+           String sqlQuery = "DELETE FROM message WHERE message_id = ?";           
            PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
            preparedStatement.setInt(1, message_id);
            preparedStatement.executeUpdate();
@@ -120,18 +120,30 @@ public class MessageDAO implements MessageDAOInterface {
     }
 
     @Override
-    public Message updateMessage(Message message) {
-        Connection connection = ConnectionUtil.getConnection();
-        Message updatedMessage;
+    public Message updateMessage(String message_text, int message_id) {
+        // Create connection
+        Connection connection = ConnectionUtil.getConnection();        
 
         try {
-            String sqlQuery = "UPDATE message SET message_text = ? WHERE message = ?";
+            // SQL query
+            String sqlQuery = "UPDATE message SET message_text = ? WHERE message_id = ?";
 
+            // creating a preparedStatement            
             PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
-            preparedStatement.setString(1, message.getMessage_text());
-            preparedStatement.setInt(2, message.getMessage_id());
-            preparedStatement.executeUpdate();
-            updatedMessage = getMessageByMessageID(message.getMessage_id());
+
+            // Setting the parameters of the preparedStatement
+            preparedStatement.setString(1, message_text);
+            preparedStatement.setInt(2, message_id);
+
+            // Executing the query
+            int affected_rows = preparedStatement.executeUpdate();
+
+            if (affected_rows > 0){
+                System.out.println("Rows were affected: " + affected_rows);
+            } else{
+                System.out.println("No update was done");
+            }
+            Message updatedMessage = getMessageByMessageID(message_id);
 
             return updatedMessage;
 
